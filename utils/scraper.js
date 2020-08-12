@@ -7,7 +7,6 @@ const scrapeAmazon = async () => {
 
     const data = await page.evaluate(() => {
         let item = document.querySelector('.celwidget')
-
         return { item }
     })
 

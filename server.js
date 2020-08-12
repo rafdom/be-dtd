@@ -16,21 +16,48 @@ app.use(express.urlencoded({ extended: true }))
 
 
 
-app.get('/products/:productName', (req, res) => {
-    (async () => {
+app.get('/', (req, res) => {
+    const puppeteer = require('puppeteer');
+
+    (async function () {
+
         const browser = await puppeteer.launch()
         const page = await browser.newPage()
-        await page.goto('https://www.amazon.ca/s?k=mouse&rh=p_n_specials_match%3A21224829011&dc&qid=1597103063&rnid=21224828011&ref=sr_nr_p_n_specials_match_1')
+        await page.goto('https://www.bestbuy.ca/en-ca/collection/giftable-mice-and-keyboards/265118?icmp=computing_20191101_mice_and_keyboards_category_detail_offer_guided_mice_keyboards_under_100', { waitUntil: 'domcontentloaded' })
 
-        const data = await page.evaluate(() => {
-            let item = document.querySelector('.celwidget')
-            return { item }
+        const productNameSelector = 'div[class^="productItemName_3IZ3c"]'
+        const priceSelector = 'div[class^="price_FHDfG"]'
+        const linkSelector = 'a[class^="link_3hcyN"]'
+
+        await page.waitForSelector(`${productNameSelector}`)
+        await page.waitForSelector(`${priceSelector}`)
+
+        const productNames = await page.evaluate((selector) => {
+            const data = Array.from(document.querySelectorAll(`${selector}`), el => el.textContent)
+            return data
+        }, productNameSelector)
+
+        const prices = await page.evaluate((selector) => {
+            const data = Array.from(document.querySelectorAll(`${selector}`), el => el.textContent)
+            return data
+        }, priceSelector)
+
+        const links = await page.evaluate((selector) => {
+            const data = Array.from(document.querySelectorAll(`${selector}`), el => `https://bestbuy.ca${el.attributes.href.value}`).slice(1)
+            return data
+        }, linkSelector)
+
+        console.log({
+            productNames: productNames.length,
+            prices: prices.length,
+            links: links.length
         })
 
-        console.log(data)
+
 
         browser.close()
     })()
+
 })
 
 
