@@ -17,7 +17,6 @@ app.use(express.urlencoded({ extended: true }))
 
 
 app.get('/', (req, res) => {
-    const puppeteer = require('puppeteer');
 
     (async function () {
 
@@ -38,7 +37,7 @@ app.get('/', (req, res) => {
         }, productNameSelector)
 
         const prices = await page.evaluate((selector) => {
-            const data = Array.from(document.querySelectorAll(`${selector}`), el => el.textContent)
+            const data = Array.from(document.querySelectorAll(`${selector}`), el => parseInt(el.textContent.slice(1)))
             return data
         }, priceSelector)
 
@@ -47,15 +46,14 @@ app.get('/', (req, res) => {
             return data
         }, linkSelector)
 
-        console.log({
-            productNames: productNames.length,
-            prices: prices.length,
-            links: links.length
+        browser.close()
+
+        res.send({
+            productNames: productNames,
+            prices: prices,
+            links: links
         })
 
-
-
-        browser.close()
     })()
 
 })
