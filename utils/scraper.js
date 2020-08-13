@@ -1,18 +1,41 @@
 const puppeteer = require('puppeteer')
 
-const scrapeAmazon = async () => {
+const bestBuyScrapper = async function (item) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto('https://www.amazon.ca/s?k=mouse&rh=p_n_specials_match%3A21224829011&dc&qid=1597103063&rnid=21224828011&ref=sr_nr_p_n_specials_match_1')
+    await page.goto(
+        `https://www.bestbuy.ca/en-ca/search?path=currentoffers0enrchstring%253aOn%2BSale&search=${item}`,
+        { waitUntil: 'domcontentloaded' })
 
-    const data = await page.evaluate(() => {
-        let item = document.querySelector('.celwidget')
-        return { item }
-    })
+    const productNameSelector = 'div[class^="productItemName_3IZ3c"]'
+    const priceSelector = 'div[class^="price_FHDfG"]'
+    const linkSelector = 'a[class^="link_3hcyN"]'
 
-    await browser.close()
+    await page.waitForSelector(`${productNameSelector}`)
+    await page.waitForSelector(`${priceSelector}`)
 
-    return data;
+    const productNames = await page.evaluate((selector) => {
+        const data = Array.from(document.querySelectorAll(`${selector}`), el => el.textContent)
+        return data
+    }, productNameSelector)
+
+    const prices = await page.evaluate((selector) => {
+        const data = Array.from(document.querySelectorAll(`${selector}`), el => parseInt(el.textContent.slice(1)))
+        return data
+    }, priceSelector)
+
+    const links = await page.evaluate((selector) => {
+        const data = Array.from(document.querySelectorAll(`${selector}`), el => `https://bestbuy.ca${el.attributes.href.value}`).slice(1)
+        return data
+    }, linkSelector)
+
+    browser.close()
+
+    return {
+        productNames: productNames,
+        prices: prices,
+        links: links
+    }
 }
 
-module.exports = { scrapeAmazon }
+module.exports = { bestBuyScrapper }
