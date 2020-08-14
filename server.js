@@ -3,8 +3,8 @@ const cors = require('cors')
 const products = require('./routes/products')
 const app = express()
 
-const port = process.env.port || 5555
-const origin = process.env.Oirigin || '*'
+const port = process.env.PORT || 5555
+const origin = process.env.ORIGIN || '*'
 
 app.use(cors({
     origin: origin,
