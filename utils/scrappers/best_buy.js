@@ -1,18 +1,16 @@
 const puppeteer = require('puppeteer')
-const getImages = require('./getImages')
-const getProductNames = require('./getProductNames')
-const { bestBuy: { imageSelector, linkSelector, priceSelector, productNameSelector, url }, viewportOptions } = require('../constants')
-const getPrices = require('./getPrices')
-const getLinks = require('./getLinks')
+const getImages = require('../get_selectors/getImages')
+const getProductNames = require('../get_selectors/getProductNames')
+const getPrices = require('../get_selectors/getPrices')
+const getLinks = require('../get_selectors/getLinks')
+const { bestBuy: { imageSelector, linkSelector, priceSelector, productNameSelector, url }, viewportOptions } = require('../../constants')
 
 const bestBuyScrapper = async function (item) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
 
     await page.goto(url(item), { waitUntil: 'networkidle2' })
-
     await page.setViewport(viewportOptions);
-
     await page.evaluate(() => { window.scrollBy(0, document.body.offsetHeight) })
 
     await page.waitForSelector(`${productNameSelector}`)
@@ -33,12 +31,6 @@ const bestBuyScrapper = async function (item) {
         products.push({ productName: productNames[i], price: prices[i], link: links[i], image: images[i] })
     }
 
-    // console.log({
-    //     images: images.length,
-    //     productNames: productNames.length,
-    //     prices: prices.length,
-    //     links: links.length
-    // })
 
     return { products }
 }

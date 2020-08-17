@@ -1,15 +1,19 @@
 const router = require('express').Router()
-const { bestBuyScrapper } = require('../utils/scrapper')
+const { bestBuyScrapper } = require('../utils/scrappers/best_buy')
 const combineProducts = require('../lib/combineProducts')
 
 
 
-module.exports = router.get('/:productName', async (req, res) => {
+module.exports = router.get('/:productName', async (req, res, next) => {
 
-    let BBproducts = await bestBuyScrapper(req.params.productName)
+    try {
+        const bestBuy = await bestBuyScrapper(req.params.productName)
+        const [item1, item2] = await combineProducts([bestBuy, bestBuy])
 
-    let [item1, item2] = await combineProducts([BBproducts, BBproducts])
+        console.log("** All Products: ", [...item1.products, ...item2.products].length)
 
-    console.log("all products: ", [...item1.products, ...item2.products].length)
-    res.send([...item1.products, ...item2.products])
+        res.send([...item1.products, ...item2.products])
+    } catch (err) {
+        res.send(next(new Error(err)))
+    }
 })
