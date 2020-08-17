@@ -2,6 +2,7 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
+const createError = require('http-errors')
 const products = require('./routes/products')
 
 const app = express()
@@ -24,9 +25,7 @@ app.use('/products', products)
 
 //erro-handlers
 app.use((req, res, next) => {
-    const err = new Error(`Page ${req.url} is not found!`)
-    err.status = 404
-    next(err)
+    next(createError(404, `Page with path ${req.url} is not found.`))
 })
 
 app.use((err, req, res, next) => {

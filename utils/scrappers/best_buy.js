@@ -13,6 +13,10 @@ const bestBuyScrapper = async function (item) {
     await page.setViewport(viewportOptions);
     await page.evaluate(() => { window.scrollBy(0, document.body.offsetHeight) })
 
+    setTimeout(() => {
+        browser.close()
+    }, 22000)
+
     await page.waitForSelector(`${productNameSelector}`)
     await page.waitForSelector(`${priceSelector}`)
     await page.waitForSelector(`${linkSelector}`)
@@ -23,6 +27,7 @@ const bestBuyScrapper = async function (item) {
     const prices = await getPrices(page, priceSelector)
     const links = await getLinks(page, linkSelector)
 
+
     browser.close()
 
     const products = []
@@ -30,7 +35,6 @@ const bestBuyScrapper = async function (item) {
     for (let i = 0; i < productNames.length; i++) {
         products.push({ productName: productNames[i], price: prices[i], link: links[i], image: images[i] })
     }
-
 
     return { products }
 }
