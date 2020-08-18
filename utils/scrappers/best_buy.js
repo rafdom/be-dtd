@@ -1,9 +1,6 @@
 const puppeteer = require('puppeteer')
-const getImages = require('../get_selectors/getImages')
-const getProductNames = require('../get_selectors/getProductNames')
-const getPrices = require('../get_selectors/getPrices')
-const getLinks = require('../get_selectors/getLinks')
 const { bestBuy: { imageSelector, linkSelector, priceSelector, productNameSelector, url }, viewportOptions } = require('../../constants')
+const getAllSelectors = require('../../utils/getAllSelectors')
 
 const bestBuyScrapper = async function (item) {
     const browser = await puppeteer.launch()
@@ -15,17 +12,14 @@ const bestBuyScrapper = async function (item) {
 
     setTimeout(() => {
         browser.close()
-    }, 22000)
+    }, 25000)
 
     await page.waitForSelector(`${productNameSelector}`)
     await page.waitForSelector(`${priceSelector}`)
     await page.waitForSelector(`${linkSelector}`)
     await page.waitForSelector(`${imageSelector}`)
 
-    const images = await getImages(page, imageSelector)
-    const productNames = await getProductNames(page, productNameSelector)
-    const prices = await getPrices(page, priceSelector)
-    const links = await getLinks(page, linkSelector)
+    const [images, productNames, prices, links] = await getAllSelectors(page, [imageSelector, linkSelector, priceSelector, productNameSelector])
 
 
     browser.close()

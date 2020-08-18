@@ -4,11 +4,14 @@ const cors = require('cors')
 const helmet = require('helmet')
 const createError = require('http-errors')
 const products = require('./routes/products')
+require('dotenv').config()
 
 const app = express()
 
 const port = process.env.PORT || 5555
 const origin = process.env.ORIGIN || '*'
+
+
 
 //global middleware
 app.use(morgan("tiny"))
