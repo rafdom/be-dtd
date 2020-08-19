@@ -3,7 +3,6 @@ const { bestBuyScrapper } = require('../utils/scrappers/bestBuy_Scrapper')
 const combineProducts = require('../lib/combineProducts')
 
 module.exports = async (req, res, next) => {
-
     let timeout
     (() => {
         timeout = setTimeout(() => {
@@ -16,13 +15,9 @@ module.exports = async (req, res, next) => {
     try {
         const bestBuy = await bestBuyScrapper(req.params.productName)
         const items = await combineProducts([bestBuy, bestBuy])
-
         clearTimeout(timeout)
-
-        console.log(items.length)
-
+        console.log({ Total_Products: items.length })
         res.send(items)
-
     } catch (err) {
         next(err)
     }
