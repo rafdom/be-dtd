@@ -1,5 +1,5 @@
 const createError = require('http-errors')
-const { bestBuyScrapper } = require('../utils/scrappers/best_buy')
+const { bestBuyScrapper } = require('../utils/scrappers/bestBuy_Scrapper')
 const combineProducts = require('../lib/combineProducts')
 
 module.exports = async (req, res, next) => {
@@ -15,13 +15,13 @@ module.exports = async (req, res, next) => {
 
     try {
         const bestBuy = await bestBuyScrapper(req.params.productName)
-        const [item1, item2] = await combineProducts([bestBuy, bestBuy])
-
-        console.log({ Products: [...item1.products, ...item2.products].length })
+        const items = await combineProducts([bestBuy, bestBuy])
 
         clearTimeout(timeout)
 
-        res.send([...item1.products, ...item2.products])
+        console.log(items.length)
+
+        res.send(items)
 
     } catch (err) {
         next(err)
