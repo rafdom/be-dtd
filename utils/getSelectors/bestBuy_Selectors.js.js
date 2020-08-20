@@ -1,24 +1,24 @@
-module.exports = async function getAllSelectors(fn = {}, selectors = []) {
+module.exports = async function getAllSelectors(fn = {}, { productNameSelector, priceSelector, linkSelector, imageSelector }) {
 
     const images = await fn.evaluate((selector) => {
         const data = Array.from(document.querySelectorAll(`${selector}`), el => el.attributes.src.value)
         return data
-    }, selectors[0])
+    }, imageSelector)
 
     const links = await fn.evaluate((selector) => {
         const data = Array.from(document.querySelectorAll(`${selector}`), el => `https://bestbuy.ca${el.attributes.href.value}`).filter(el => el.includes('/product/'))
         return data
-    }, selectors[1])
+    }, linkSelector)
 
     const prices = await fn.evaluate((selector) => {
         const data = Array.from(document.querySelectorAll(`${selector}`), el => parseFloat(el.textContent.slice(1).replace(",", "")))
         return data
-    }, selectors[2])
+    }, priceSelector)
 
     const productNames = await fn.evaluate((selector) => {
         const data = Array.from(document.querySelectorAll(`${selector}`), el => el.textContent)
         return data
-    }, selectors[3])
+    }, productNameSelector)
 
     return [images, links, prices, productNames]
 }
