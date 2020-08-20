@@ -1,6 +1,6 @@
 const createError = require('http-errors')
 const { bestBuyScrapper } = require('../utils/scrappers/bestBuy_Scrapper')
-const combineProducts = require('../lib/combineProducts')
+const combineProducts = require('../utils/combineProducts')
 
 module.exports = async (req, res, next) => {
     let timeout
