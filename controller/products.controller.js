@@ -14,6 +14,7 @@ module.exports = async (req, res, next) => {
 
   try {
     const bestBuy = await bestBuyScrapper(req.params.productName);
+    console.log(bestBuy);
     const items = await combineProducts([bestBuy, bestBuy]);
     clearTimeout(timeout);
     console.log({ Total_Products: items.length });

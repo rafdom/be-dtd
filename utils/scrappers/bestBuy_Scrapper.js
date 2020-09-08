@@ -4,13 +4,14 @@ const {
   viewportOptions,
 } = require("../../constants");
 const allBestBuySelectors = require("../getSelectors/bestBuy_Selectors.js");
-const mapper = require("../mapper");
+const selectorMapper = require("../selectorMapper");
+const getProductList = require("../getProductList");
 
 const bestBuyScrapper = async function (item) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  await page.goto(url(item), { waitUntil: "networkidle2" });
+  await page.goto(url(item), { waitUntil: "domcontentloaded" });
   await page.setViewport(viewportOptions);
   await page.evaluate(() => {
     window.scrollBy(0, document.body.offsetHeight);
@@ -20,14 +21,12 @@ const bestBuyScrapper = async function (item) {
     browser.close();
   }, 25000);
 
-  await mapper(
-    page,
-    selectors.productNameSelector,
+  await selectorMapper(page, [
     selectors.productNameSelector,
     selectors.priceSelector,
     selectors.linkSelector,
-    selectors.imageSelector
-  );
+    selectors.imageSelector,
+  ]);
 
   const [images, links, prices, productNames] = await allBestBuySelectors(
     page,
@@ -36,16 +35,7 @@ const bestBuyScrapper = async function (item) {
 
   browser.close();
 
-  const products = [];
-
-  for (let i = 0; i < productNames.length; i++) {
-    products.push({
-      productName: productNames[i],
-      price: prices[i],
-      link: links[i],
-      image: images[i],
-    });
-  }
+  const products = getProductList(productNames, prices, links, images);
 
   return { products };
 };
