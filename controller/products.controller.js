@@ -1,6 +1,6 @@
 const createError = require("http-errors");
-const { bestBuyScrapper } = require("../utils/scrappers/bestBuy_Scrapper");
 const combineProducts = require("../utils/combineProducts");
+const bestBuy = require("../lib/storeScrappers/bestbuy");
 
 module.exports = async (req, res, next) => {
   let timeout;
@@ -13,9 +13,9 @@ module.exports = async (req, res, next) => {
   })();
 
   try {
-    const bestBuy = await bestBuyScrapper(req.params.productName);
-    console.log(bestBuy);
-    const items = await combineProducts([bestBuy, bestBuy]);
+    const bestBuyProducts = await bestBuy(req.params.productName);
+    console.log(bestBuyProducts);
+    const items = await combineProducts([bestBuyProducts, bestBuyProducts]);
     clearTimeout(timeout);
     console.log({ Total_Products: items.length });
     res.send(items);

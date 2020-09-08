@@ -1,5 +1,5 @@
 module.exports = async function allBestBuySelectors(
-  page = {},
+  page,
   { productNameSelector, priceSelector, linkSelector, imageSelector }
 ) {
   const images = await page.evaluate((selector) => {
