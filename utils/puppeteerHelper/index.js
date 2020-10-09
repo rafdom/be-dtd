@@ -4,22 +4,19 @@ async function selectorMapper(page, selectors) {
   for (let selector in selectors) {
     await page.waitForSelector(`${selectors[selector]}`);
   }
-
   return selectors;
 }
 
-async function getPage(browser, page, url, selectorMapper) {
+async function getPage(browser, page, url) {
   await page.goto(url, { waitUntil: "domcontentloaded" });
   await page.setViewport(viewportOptions);
   await page.evaluate(() => {
     window.scrollBy(0, document.body.offsetHeight);
   });
 
-  setTimeout(() => {
-    browser.close();
+  setTimeout(async () => {
+    await browser.close();
   }, 25000);
-
-  await selectorMapper;
 }
 
 function getProductList(name, price, link, image) {
@@ -32,7 +29,6 @@ function getProductList(name, price, link, image) {
       image: image[i],
     });
   }
-
   return list;
 }
 

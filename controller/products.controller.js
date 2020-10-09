@@ -6,6 +6,7 @@ module.exports = async (req, res, next) => {
   let timeout;
   (() => {
     timeout = setTimeout(() => {
+      console.log("time out got called.");
       next(createError(400, `The product's name is invalid.`));
       return;
     }, 25000);
